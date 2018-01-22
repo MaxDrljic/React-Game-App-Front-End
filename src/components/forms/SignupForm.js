@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { connect } from 'react-redux'
 import { Link } from "react-router-dom";
 import isEmail from "validator/lib/isEmail";
-import { createUserRequest } from "../../actions/user";
+import { createUserRequest } from "../../actions/users";
 
 class SignupForm extends React.Component {
   state = {
@@ -14,6 +14,10 @@ class SignupForm extends React.Component {
     },
     errors: {}
   };
+
+  componentWillReceiveProps(nextProps) {
+    this.setState({ errors: nextProps.serverErrors });
+  }
 
   onChange = e =>
     this.setState({
@@ -26,7 +30,7 @@ class SignupForm extends React.Component {
     this.setState({ errors });
     if (Object.keys(errors).length === 0) {
       this.setState({ loading: true });
-      this.props.submit(this.state.data)
+      this.props.submit(this.state.data);
     }
   };
 
@@ -102,8 +106,15 @@ class SignupForm extends React.Component {
   }
 }
 
+function mapStateToProps(state) {
+  return {
+    serverErrors: state.formErrors.signup
+  }
+}
+
 SignupForm.propTypes = {
-  submit: PropTypes.func.isRequired
+  submit: PropTypes.func.isRequired,
+  serverErrors: PropTypes.func.isRequired
 };
 
-export default connect(null, { submit: createUserRequest })(SignupForm);
+export default connect(mapStateToProps, { submit: createUserRequest })(SignupForm);
